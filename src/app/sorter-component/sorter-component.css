@@ -1,0 +1,67 @@
+/* Modal & Options */
+.modal {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(20, 30, 60, 0.9); color: white; padding: 30px;
+  width: 400px; border-radius: 15px; text-align: center; z-index: 1000;
+}
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5); z-index: 999;
+}
+.option-group { margin: 20px 0; text-align: left; }
+.option-button {
+  display: inline-block; margin: 5px; padding: 10px 20px; border: none;
+  border-radius: 5px; background: #1e3a8a; color: white; cursor: pointer;
+}
+.option-button.active { background: #2d6a4f; font-weight: bold; }
+.close-button {
+  margin-top: 20px; padding: 10px 20px; background: #7e0000;
+  border: none; color: white; border-radius: 5px; cursor: pointer;
+}
+
+/* Layout */
+.main-page {
+  height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center;
+}
+.title {
+  height: 7%; font-size: 3vh; padding: 20px; color: #f0fff2;
+  text-align: center; display: flex; align-items: center; justify-content: center;
+}
+.button-container {
+  height: 5%; display: flex; padding: 20px; justify-content: center; align-items: center;
+}
+.basic-button, .copy-button {
+  background-color: #40ab47a6; color: #e5e5e5; border: none; border-radius: 5px;
+  cursor: pointer; font-size: 2vh; padding: 10px 15px; height: 2em; margin: 0 10px;
+}
+.basic-button:hover, .copy-button:hover { background-color: #45a049; }
+
+/* Duel */
+.duel-container {
+  display: flex; justify-content: space-between; padding: 20px 10%; height: 75%; box-sizing: border-box;
+}
+.music-card {
+  padding: 20px; width: 48%; background: rgba(0, 26, 63, 0.6); text-align: center;
+  border-radius: 8px; backdrop-filter: blur(3px); display: flex; flex-direction: column; justify-content: space-between;
+}
+.music-card .anime { color: #a0ffac; font-size: 2.2vh; height: 10%; display: flex; align-items: center; justify-content: center; }
+.music-card .song { color: #fcffef; font-size: 2vh; height: 10%; display: flex; align-items: center; justify-content: center; }
+.music-card button { background-color: #40ab47a6; color: #e5e5e5; border: none; border-radius: 5px; height: 10%; font-size: 2.5vh; cursor: pointer; }
+.music-card video, .music-card iframe, .music-card audio { width: 100%; height: 65%; border-radius: 8px; }
+
+/* Progress */
+.progress {
+  padding: 10px; height: 10%; width: 60%; margin: 0 auto;
+  background: rgba(0, 26, 63, 0.5); border-radius: 10px; backdrop-filter: blur(3px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.progressbattle { color: #f0fff2; font-size: 3vh; margin-bottom: 5px; }
+.progress-container { width: 100%; height: 50%; background-color: #a9a9a9; border-radius: 10px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #7f9bff, #2975ff); transition: width 0.3s; }
+
+/* Table */
+.table-container { width: 100%; height: 100%; overflow-y: auto; background-color: rgba(0, 0, 50, 0.7); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; color: #fff; text-align: left; }
+th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
+th { background-color: #003366; position: sticky; top: 0; }
+tr:nth-child(even) { background-color: rgba(0, 0, 50, 0.5); }

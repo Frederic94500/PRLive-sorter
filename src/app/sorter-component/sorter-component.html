@@ -1,0 +1,86 @@
+<div class="modal-overlay" *ngIf="showSettingsModal" (click)="toggleSettings()"></div>
+<div class="modal" *ngIf="showSettingsModal">
+  <h2>Settings</h2>
+  <div class="option-group">
+    <p>Format:</p>
+    <button class="option-button" [class.active]="settings.video" (click)="setFormat(true)">Video</button>
+    <button class="option-button" [class.active]="!settings.video" (click)="setFormat(false)">Audio</button>
+  </div>
+  <div class="option-group">
+    <p>Region:</p>
+    <button class="option-button" [class.active]="settings.region === 'eu'" (click)="setRegion('eu')">Europe</button>
+    <button class="option-button" [class.active]="settings.region === 'naw'" (click)="setRegion('naw')">NA West</button>
+    <button class="option-button" [class.active]="settings.region === 'nae'" (click)="setRegion('nae')">NA East</button>
+  </div>
+  <button class="close-button" (click)="toggleSettings()">Close</button>
+</div>
+
+<div id="main" class="main-page">
+  <div class="title">
+    <span *ngIf="!started && !finished && !hasSave">Press "Start" to begin sorting.</span>
+    <span *ngIf="!started && !finished && hasSave">Press "Start" to begin or "Continue" to resume.</span>
+    <span *ngIf="finished">Make sure your sheet is sorted by ID before pasting!</span>
+  </div>
+
+  <div id="buttons" class="button-container">
+    <ng-container *ngIf="!started && !finished">
+      <button class="basic-button" (click)="toggleSettings()">Settings</button>
+      <button class="basic-button" (click)="onStart(false)">Start</button>
+      <button *ngIf="hasSave" class="basic-button" (click)="onStart(true)">Continue</button>
+    </ng-container>
+    <ng-container *ngIf="started && !finished">
+      <button class="basic-button" (click)="onUndo()">Undo</button>
+    </ng-container>
+    <ng-container *ngIf="finished">
+      <button class="copy-button" (click)="copyRanksToClipboard()">Copy ranks</button>
+      <button class="copy-button" (click)="copyResultsToClipboard()">Copy results</button>
+    </ng-container>
+  </div>
+
+  <div id="duel" class="duel-container" *ngIf="started && !finished && duelState">
+    <div class="music-card">
+      <ng-container *ngTemplateOutlet="mediaContent; context: {$implicit: duelState.left}"></ng-container>
+      <button (click)="onPick('left')">PICK</button>
+    </div>
+    <div class="music-card">
+      <ng-container *ngTemplateOutlet="mediaContent; context: {$implicit: duelState.right}"></ng-container>
+      <button (click)="onPick('right')">PICK</button>
+    </div>
+  </div>
+
+  <div class="duel-container" *ngIf="finished">
+    <div class="table-container">
+      <table>
+        <thead><tr><th>ID</th><th>Anime</th><th>Song</th><th>Rank</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let res of results">
+            <td>{{ res.id }}</td>
+            <td [title]="res.anime">{{ res.anime }}</td>
+            <td [title]="res.name">{{ res.name }}</td>
+            <td>{{ res.rank }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- <div class="progress" *ngIf="started || finished">
+    <span class="progressbattle" *ngIf="!finished">Battle no. {{ duelState?.battleNo }}</span>
+    <span class="progressbattle" *ngIf="finished">Completed! ({{ duelState?.battleNo }} battles)</span>
+    <div class="progress-container">
+      <div class="progress-bar" [style.width.%]="duelState?.progressPercent"></div>
+    </div>
+  </div> -->
+</div>
+
+<ng-template #mediaContent let-music>
+  <ng-container *ngIf="settings.video || !music.mp3; else audioMode">
+    <iframe *ngIf="isYoutube(music.video)" [src]="getSafeUrl(music.video)" frameborder="0" allowfullscreen></iframe>
+    <video *ngIf="!isYoutube(music.video)" controls [src]="getVideoUrl(music.video)"></video>
+  </ng-container>
+  <ng-template #audioMode>
+    <audio controls [src]="getAudioUrl(music)"></audio>
+  </ng-template>
+  <div class="anime">{{ music.anime }}</div>
+  <div class="song">{{ music.name }}</div>
+</ng-template>

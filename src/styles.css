@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+  font-family: Arial, sans-serif;
+  background-image: url("https://images3.alphacoders.com/132/1322308.jpeg");
+  background-color: #f4f4f9;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+}
