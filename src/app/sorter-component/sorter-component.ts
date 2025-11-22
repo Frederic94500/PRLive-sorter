@@ -5,6 +5,9 @@ import { SorterService } from '@services/sorter.service';
 import { CommonModule, isPlatformServer } from '@angular/common';
 import { take, tap } from 'rxjs/operators';
 import { MonoTypeOperatorFunction } from 'rxjs';
+import { SorterSheet } from '@interfaces/sheet.interface';
+import { Response } from '@interfaces/api.interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-sorter-component',
@@ -13,9 +16,10 @@ import { MonoTypeOperatorFunction } from 'rxjs';
   styleUrl: './sorter-component.css',
 })
 export class SorterComponent implements OnInit {
+  sheet!: SorterSheet;
+
   started = false;
   finished = false;
-  hasSave = false;
   showSettingsModal = false;
 
   duelState: DuelState | null = null;
@@ -27,22 +31,28 @@ export class SorterComponent implements OnInit {
   };
 
   constructor(
+    private route: ActivatedRoute,
     private sorterService: SorterService,
     private sanitizer: DomSanitizer,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    const response: Response<SorterSheet> = this.route.snapshot.data['sheet'];
+    if (response.code != 200) {
+      console.log('HELP');
+    }
+
+    this.sheet = response.data;
+    this.sorterService.loadData(this.sheet.songList);
+    this.sorterService.localStorageKey = "sorterPR-" + this.sheet.sheetId
+
     if (isPlatformServer(this.platformId)) {
       return;
     }
 
     const once = <T>(): MonoTypeOperatorFunction<T> =>
       isPlatformServer(this.platformId) ? take(1) : tap(() => {});
-    
-    this.sorterService.loadData().pipe(once()).subscribe(() => {
-      this.hasSave = this.sorterService.hasSave();
-    });
     
     this.sorterService.currentDuel$.pipe(once()).subscribe(state => {
       this.duelState = state;
@@ -80,6 +90,14 @@ export class SorterComponent implements OnInit {
     this.sorterService.undo();
   }
 
+  isFinished(): boolean {
+    return this.sorterService.isFinished();
+  }
+
+  hasSave(): boolean {
+    return this.sorterService.hasSave();
+  }
+
   // Media Helper
   isYoutube(url: string): boolean {
     return url?.includes('youtube.com') || url?.includes('youtu.be');
@@ -113,7 +131,8 @@ export class SorterComponent implements OnInit {
   // Result
   prepareResults() {
     const sortedMusic = this.sorterService.getResults();
-    this.results = sortedMusic.map((music, index) => ({ ...music, rank: index + 1 }));
+    this.results = sortedMusic.map((music, index) => ({ ...music, rank: index + 1 }))
+      .sort((a, b) => a.id - b.id);
   }
 
   copyRanksToClipboard() {

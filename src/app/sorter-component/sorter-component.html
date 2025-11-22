@@ -17,8 +17,8 @@
 
 <div id="main" class="main-page">
   <div class="title">
-    <span *ngIf="!started && !finished && !hasSave">Press "Start" to begin sorting.</span>
-    <span *ngIf="!started && !finished && hasSave">Press "Start" to begin or "Continue" to resume.</span>
+    <span *ngIf="!started && !finished && !hasSave()">Press "Start" to begin sorting.</span>
+    <span *ngIf="!started && !finished && hasSave()">Press "Start" to begin or "Continue" to resume.</span>
     <span *ngIf="finished">Make sure your sheet is sorted by ID before pasting!</span>
   </div>
 
@@ -26,7 +26,7 @@
     <ng-container *ngIf="!started && !finished">
       <button class="basic-button" (click)="toggleSettings()">Settings</button>
       <button class="basic-button" (click)="onStart(false)">Start</button>
-      <button *ngIf="hasSave" class="basic-button" (click)="onStart(true)">Continue</button>
+      <button *ngIf="hasSave()" class="basic-button" (click)="onStart(true)">Continue</button>
     </ng-container>
     <ng-container *ngIf="started && !finished">
       <button class="basic-button" (click)="onUndo()">Undo</button>

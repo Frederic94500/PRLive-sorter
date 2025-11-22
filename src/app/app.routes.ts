@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { SorterComponent } from './sorter-component/sorter-component';
+import { SorterResolver } from '../resolvers/sorter-resolver';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: ':prId/:voterId/:sheetId',
     component: SorterComponent,
-    pathMatch: 'full',
-  },
-  //   path: ':prId/:voterId/:sheetId',
-  //   component: SorterComponent,
-  // }
+    resolve: {
+      sheet: SorterResolver,
+    }
+  }
 ];

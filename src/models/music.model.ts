@@ -1,4 +1,5 @@
 export interface Music {
+  uuid: string;
   id: number;
   anime: string;
   name: string;

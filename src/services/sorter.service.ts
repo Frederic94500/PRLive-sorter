@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Music, DuelState, SortState } from '@models/music.model';
 
 @Injectable({
@@ -19,19 +18,23 @@ export class SorterService {
   private finishedSubject = new BehaviorSubject<boolean>(false);
   public finished$ = this.finishedSubject.asObservable();
 
-  private readonly STORAGE_KEY = 'sorter_minimal_state';
+  public localStorageKey: string = "";
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
-  loadData(): Observable<void> {
-    return this.http.get<Music[]>('assets/songList.json').pipe(
-      map(data => { this.musicData = data; })
-    );
+  loadData(musicData: Music[]) {
+    this.musicData = musicData;
+  }
+  
+  isFinished(): boolean {
+    const state: SortState = this.readLocalStorage()!;
+    if (!state) return false;
+    return state.queue.length == 1 && state.left.length == 0 && state.right.length == 0;
   }
 
   start(resume: boolean = false) {
-    if (resume && localStorage.getItem(this.STORAGE_KEY)) {
-      this.state = JSON.parse(localStorage.getItem(this.STORAGE_KEY)!);
+    if (resume && this.hasSave()) {
+      this.state = this.readLocalStorage()!;
       if (this.state.left.length === 0 && this.state.queue.length > 1) {
         this.prepareNextBattle();
       } else if (this.state.queue.length == 1 && this.state.left.length == 0 && this.state.right.length == 0) {
@@ -61,7 +64,7 @@ export class SorterService {
     if (this.state.queue.length <= 1 && this.state.left.length === 0) {
       this.finishedSubject.next(true);
       this.currentDuelSubject.next(null);
-      localStorage.removeItem(this.STORAGE_KEY);
+      localStorage.removeItem(this.localStorageKey);
       return;
     }
 
@@ -98,14 +101,14 @@ export class SorterService {
       this.prepareNextBattle();
     }
 
-    this.save();
+    this.saveLocalStorage();
     this.emitState();
   }
 
   undo() {
     if (this.history.length === 0) return;
     this.state = this.history.pop()!;
-    this.save();
+    this.saveLocalStorage();
     this.emitState();
   }
 
@@ -129,14 +132,21 @@ export class SorterService {
     return [];
   }
 
-  private save() {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+  private saveLocalStorage() {
+    localStorage.setItem(this.localStorageKey, JSON.stringify(this.state));
+  }
+
+  private readLocalStorage(): SortState | null {
+    if (!this.hasSave()) {
+      return null;
+    }
+    return JSON.parse(localStorage.getItem(this.localStorageKey)!);
   }
 
   hasSave(): boolean {
     if (typeof localStorage === 'undefined') {
       return false;
     }
-    return !!localStorage.getItem(this.STORAGE_KEY);
+    return !!localStorage.getItem(this.localStorageKey);
   }
 }
