@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { SheetService } from '../services/sheet.service';
+import { SheetService } from '@services/sheet.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
